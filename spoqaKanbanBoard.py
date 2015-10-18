@@ -21,27 +21,15 @@ db = flask.ext.sqlalchemy.SQLAlchemy(app)
 #     name = db.Column(db.Unicode, unique=True)
 #     joined_date = db.Column(db.Date)
 
-
-# 보드 table
-class Board(db.Model):
-    __tablename__ = 'board'
+# 카드 table
+class Card(db.Model):
+    __tablename__ = 'card'
 
     # Scehma
     id = db.Column(db.Integer, primary_key=True)
-    # owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # owner = db.relationship('User', backref=db.backref('borders', lazy='dynamic'))
-    # created_date = db.Column(db.Date)
+    list_id = db.Column(db.Integer, db.ForeignKey('list.id'))
+    title = db.Column(db.Unicode)
 
-    # Relations
-    lists = relationship("List", secondary="board_lists", backref=backref("board"))
-
-# 보드->리스트 one2many relation
-class Board_Lists(db.Model):
-    __tablename__ = 'board_lists'
-
-    # Scehma
-    board_id = db.Column(db.Integer, db.ForeignKey('board.id'), primary_key=True)
-    list_id = db.Column(db.Integer, db.ForeignKey('list.id'), primary_key=True)
 
 # 리스트 table
 class List(db.Model):
@@ -52,24 +40,37 @@ class List(db.Model):
     board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
 
     # Relations
-    cards = relationship("Card", secondary="list_cards", backref=backref("card"))
+    cards = relationship(Card, secondary="list_cards", backref=backref("card"), lazy='dynamic')
 
-# 리스트->카드 one2many relation
+
+# 보드 table
+class Board(db.Model):
+    __tablename__ = 'board'
+
+    # Scehma
+    id = db.Column(db.Integer, primary_key=True)
+    created_date = db.Column(db.Date)
+    # owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # owner = db.relationship('User', backref=db.backref('borders', lazy='dynamic'))
+
+    # Relations
+    lists = relationship(List, secondary="board_lists", backref=backref("board"), lazy='dynamic')
+
+# 보드->리스트 relation
+class Board_Lists(db.Model):
+    __tablename__ = 'board_lists'
+
+    # Scehma
+    board_id = db.Column(db.Integer, db.ForeignKey('board.id'), primary_key=True)
+    list_id = db.Column(db.Integer, db.ForeignKey('list.id'), primary_key=True)
+
+# 리스트->카드 relation
 class List_Cards(db.Model):
     __tablename__ = 'list_cards'
 
     # Scehma
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), primary_key=True)
     card_id = db.Column(db.Integer, db.ForeignKey('card.id'), primary_key=True)
-
-class Card(db.Model):
-    __tablename__ = 'card'
-
-    # Scehma
-    id = db.Column(db.Integer, primary_key=True)
-    list_id = db.Column(db.Integer, db.ForeignKey('list.id'))
-    title = db.Column(db.Unicode)
-
 
 # Create the database tables.
 db.create_all()
