@@ -4,6 +4,7 @@ import flask
 import flask.ext.sqlalchemy
 import flask.ext.restless
 from sqlalchemy.orm import relationship, backref
+import datetime
 
 # Create the Flask application and the Flask-SQLAlchemy object.
 app = flask.Flask(__name__)
@@ -30,6 +31,14 @@ class Card(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'))
     title = db.Column(db.Unicode)
 
+    # fucntion
+    def __init__(self, list_id, title):
+        self.list_id = list_id
+        self.title = title
+
+    def __repr__(self):
+        return '<{} card, parent list:{}>'.format(self.title,self.list_id)
+
 
 # 리스트 table
 class List(db.Model):
@@ -41,6 +50,14 @@ class List(db.Model):
 
     # Relations
     cards = relationship(Card, secondary="list_cards", backref=backref("card"), lazy='dynamic')
+
+    # fucntion
+    def __init__(self, board_id, card=""):
+        self.board_id = board_id
+        # self.cards = card
+
+    def __repr__(self):
+        return '<list, parent board:{}>'.format(self.board_id)
 
 
 # 보드 table
@@ -55,6 +72,13 @@ class Board(db.Model):
 
     # Relations
     lists = relationship(List, secondary="board_lists", backref=backref("board"), lazy='dynamic')
+
+    # fucntion
+    def __init__(self, created_date=datetime.date.today().strftime('%d-%m-%y')):
+        self.created_date = created_date
+
+    def __repr__(self):
+        return '<board, created {}>'.format(self.created_date)
 
 # 보드->리스트 relation
 class Board_Lists(db.Model):
