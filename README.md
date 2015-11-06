@@ -1,7 +1,4 @@
-## 스포카 2015 프로그래머 채용 과제
-- 지원자 변동삼
-- dongsamb@gmail.com
-
+## KanbanBoard REST API Server
 
 ### Library
 - Flask 0.10.1
